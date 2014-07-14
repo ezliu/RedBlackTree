@@ -1,0 +1,14 @@
+GTEST_DIR=/Users/Evan/Downloads/gtest-1.7.0
+
+all: myTests
+
+myTests:
+	g++ -isystem ${GTEST_DIR}/include -pthread /Users/Evan/Desktop/Evan\'s\ Folder/Coding\ Projects/RedBlackTree/myTests.cpp libgtest.a -o myTests
+
+RedBlackTree.o:
+	g++ -c RedBlackTree.cpp
+
+clean:
+	rm -rf *o myTests
+
+
