@@ -1,5 +1,6 @@
 #ifndef REDBLACKTREE_H
 #define REDBLACKTREE_H
+#define NULL 0
 
 template <typename ElemType>
 class RedBlackTree {
