@@ -3,6 +3,7 @@
 #include <iostream>
 #include <cstdlib>
 #include <set>
+#include <map>
 
 using namespace std;
 
@@ -45,14 +46,6 @@ TEST_F(RedBlackTreeTest, SanityCheck) {
 	EXPECT_FALSE(myTree.empty());
 }
 
-TEST_F(RedBlackTreeTest, ParentChildMatchTest) {
-	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying parent-child pointers.\n";
-	for (int i = 0; i < 1000; i++) {
-		myTree.insert(rand()%100);
-		EXPECT_TRUE(myTree.parentChildMatch());
-	}
-}
-
 TEST_F(RedBlackTreeTest, InsertionSizeTest) {
 	std::cout << "Inserting 1000 random integers [0, 99] into tree and checking size.\n";
 	for (int i = 1; i <= 1000; i++) {
@@ -90,6 +83,14 @@ TEST_F(RedBlackTreeTest, AdvancedContainsTest) {
 	}
 }
 
+TEST_F(RedBlackTreeTest, ParentChildMatchTest) {
+	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying parent-child pointers.\n";
+	for (int i = 0; i < 1000; i++) {
+		myTree.insert(rand()%100);
+		EXPECT_TRUE(myTree.parentChildMatch());
+	}
+}
+
 TEST_F(RedBlackTreeTest, BlackRootTest) {
 	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying that root is black.\n";
 	for (int i = 0; i < 1000; i++) {
@@ -116,6 +117,20 @@ TEST_F(RedBlackTreeTest, RedChildTest) {
 		int next = rand()%5000;
 		myTree.insert(next);
 		order.push(next);
+	}
+}
+
+TEST_F(RedBlackTreeTest, CountTest) {
+	std::cout << "Inserting 1000 random integers [0, 299] into tree and checking counter operator.\n";
+	map<int, int> freq;
+	for (int i = 0; i < 1000; i++) {
+		int next = rand()%300;
+		freq[next]++;
+		myTree.insert(next);
+	}
+
+	for (int i = 0; i < 300; i++) {
+		EXPECT_EQ(freq[i], myTree.count(i));
 	}
 }
 
