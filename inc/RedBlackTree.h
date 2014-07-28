@@ -211,7 +211,6 @@ void RedBlackTree<ElemType>::recursiveInsert(const ElemType& value, Node* currNo
 
 	if (root == NULL) { // Insert root node
 		root = makeNode(value, NULL, false);
-		//std::cout<<"Root is null!"<<std::endl;
 		return;
 	}
 	if (value < currNode->value) { // Traverse left
