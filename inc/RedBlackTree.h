@@ -49,6 +49,9 @@ public:
     /** Checks if an element is in the tree */
     bool contains(const ElemType& value) const;
 
+    /** Returns the number of times an element is in the tree. */
+    int count(const ElemType& value) const;
+
     /** Checks if the root is black */
     bool blackRoot() const;
 
@@ -99,11 +102,11 @@ private:
     /** Recursive function to check all blackheights */
     bool verifyBlackHeight(Node* currNode) const;
 
-    /** Recursively checks if a value is contained */
-    bool contains(Node* currNode, const ElemType& value) const;
-
     /** Recursively checks that parent and children pointers match */
     bool parentChildMatch(Node* currNode) const;
+
+    /** Finds the node in the tree with the given value if it exists. Returns NULL if not. */
+    Node* findNode(Node* currNode, const ElemType &value) const;
 };
 
 /**
@@ -357,16 +360,7 @@ bool RedBlackTree<ElemType>::verifyBlackHeight() const {
 /** Recursive wrapper for determining if an element is contained in the tree */
 template <typename ElemType>
 bool RedBlackTree<ElemType>::contains(const ElemType& value) const {
-	return contains(root, value);
-}
-
-/** Recursively determines if tree contains given element */
-template <typename ElemType>
-bool RedBlackTree<ElemType>::contains(Node* currNode, const ElemType& value) const {
-	if (currNode == NULL) return false;
-	if (currNode->value == value) return true;
-	if (value < currNode->value) return contains(currNode->lChild, value);
-	else return contains(currNode->rChild, value);
+	return count(value) != 0;
 }
 
 /** Returns whether or not the root is black. Returns true if NULL root */
@@ -390,5 +384,22 @@ bool RedBlackTree<ElemType>::parentChildMatch(Node* currNode) const {
 	if (currNode->rChild != NULL && currNode->rChild->parent != currNode) return false;
 	if (!parentChildMatch(currNode->lChild) || !parentChildMatch(currNode->rChild)) return false;
 	return true;
+}
+
+/** Finds a given node if it exists. Returns NULL otherwise. */
+template <typename ElemType>
+typename RedBlackTree<ElemType>::Node*
+RedBlackTree<ElemType>::findNode(Node* currNode, const ElemType &value) const {
+	if (currNode == NULL) return NULL;
+	if (currNode->value == value) return currNode;
+	if (value < currNode->value) return findNode(currNode->lChild, value);
+	else return findNode(currNode->rChild, value);
+}
+
+/** Returns the number of times a key is in the tree. */
+template <typename ElemType>
+int RedBlackTree<ElemType>::count(const ElemType &value) const {
+	if (findNode(root, value) == NULL) return 0;
+	return findNode(root, value)->count;
 }
 #endif // REDBLACKTREE_H
