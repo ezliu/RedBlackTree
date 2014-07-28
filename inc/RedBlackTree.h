@@ -109,63 +109,40 @@ private:
 /**
  * Implementation details */
 
+/** Constructor */
 template <typename ElemType>
 RedBlackTree<ElemType>::RedBlackTree():
 	root(NULL),
 	numElems(0)
 {}
 
+/** Destructor */
 template <typename ElemType>
 RedBlackTree<ElemType>::~RedBlackTree() {
 	recursiveDelete(root);
 }
 
+/** Recursive wrapper for insert */
 template <typename ElemType>
 void RedBlackTree<ElemType>::insert(const ElemType &value) {
-	//std::cout << "Inserting: " << value <<  std::endl;
 	numElems++;
 	recursiveInsert(value, root);
 }
 
+/** Returns number of keys in tree */
 template <typename ElemType>
 int RedBlackTree<ElemType>::size() const {
 	return numElems;
 }
 
+/** Returns if tree is empty */
 template <typename ElemType>
 bool RedBlackTree<ElemType>::empty() const {
 	return size() == 0;
 }
 
-//template <typename ElemType>
-//std::stringstream& RedBlackTree<ElemType>::debugString() const {
-//	std::stringstream debugString;
-//	std::queue<Node*> myQueue;
-//	}
-//	myQueue.push(root);
-//	std::queue<Node*> nextQueue;
-//	while (true) {
-//		bool allNull = true;
-//		Node* nextNode = myQueue.front();
-//		myQueue.pop();
-//		if (nextNode == NULL) {
-//			nextQueue.push(NULL);
-//			nextQueue.push(NULL);
-//			debugString << "NULL b ";
-//		} else {
-//			nextQueue.push(nextNode->lChild);
-//			nextQueue.push(nextNode->rChild);
-//			debugString << nextNode->value;
-//			debugString << " " << (nextNode->red) ? "r  " : "b ";
-//			allNull = false;
-//		}
-//		if (myQueue.empty()) {
-//			debugString << "\n";
-//			if (allNull) return debugString;
-//			std::swap(myQueue, nextQueue);
-//		}
-//	}
-//}
+//TODO: Implement a DEBUG STRING 
+
 
 /** Prints out the tree by enqueueing all of the elements in order by 
  * tree level */
@@ -203,40 +180,27 @@ void RedBlackTree<ElemType>::print() const {
 	}
 }
 
+/** Recursively inserts an element into tree and then restores the tree properties */
 template <typename ElemType>
 void RedBlackTree<ElemType>::recursiveInsert(const ElemType& value, Node* currNode) {
-	//std::cout<<"Recursive Inserting: " << value << std::endl;
-	//if (currNode != NULL) std::cout << "Curr Node: " << currNode->value << std::endl;
-	//else std::cout << "Curr Node: NULL" << std::endl;
-
 	if (root == NULL) { // Insert root node
 		root = makeNode(value, NULL, false);
-		return;
-	}
-	if (value < currNode->value) { // Traverse left
-		//std::cout << "Traversing left!" << std::endl;
+	} else if (value < currNode->value) { // Traverse left
 		if (currNode->lChild == NULL) { // If insertable, place node.
-			//std::cout << "Inserting left!" << std::endl;
 			currNode->lChild = makeNode(value, currNode);
 			restoreTree(currNode->lChild);
-		} else {
-			//std::cout << currNode->lChild << std::endl;
-			recursiveInsert(value, currNode->lChild);
-		}	
+		} else recursiveInsert(value, currNode->lChild); 	
 	} else if (value == currNode->value) {
-		//std::cout << "Middle" << std::endl;
 	       	currNode->count++; // Duplicates insert
-		//std::cout << "We're still alive." << std::endl;
 	} else { // Traverse right
-		//std::cout << "Traversing right!" << std::endl;
 		if (currNode->rChild == NULL) { // If insertable, place node.
-			//std::cout << "Inserting right!" << std::endl;
 			currNode->rChild = makeNode(value, currNode);
 			restoreTree(currNode->rChild);
 		} else recursiveInsert(value, currNode->rChild);
 	}
 }
 
+/** Makes an initial node with the given params */
 template <typename ElemType>
 typename RedBlackTree<ElemType>::Node*
 RedBlackTree<ElemType>::makeNode(const ElemType& value, Node* parent, const bool red) const {
@@ -250,6 +214,7 @@ RedBlackTree<ElemType>::makeNode(const ElemType& value, Node* parent, const bool
 	return newNode;
 }
 
+/** Frees memory of current node and all of its children recursively*/
 template <typename ElemType>
 void RedBlackTree<ElemType>::recursiveDelete(Node*& currNode) {
 	if (currNode == NULL) return;
@@ -258,39 +223,24 @@ void RedBlackTree<ElemType>::recursiveDelete(Node*& currNode) {
 	delete currNode;
 }
 
+/** Does a tree rotation at given node*/
 template <typename ElemType>
 void RedBlackTree<ElemType>::rotate(Node* child, const bool left) {
 	Node* origParent = child->parent; // Store original pointers
 	Node* origGrandparent = origParent->parent;
 	child->parent = origGrandparent;
-	//std::cout << "Child: " << child->value << std::endl;
-//	if (origParent != NULL) std::cout << "Parent: " << origParent->value << std::endl;
-//	if (origGrandparent != NULL) std::cout << "Grandparent: " << origGrandparent->value << std::endl;
-	//std::cout << "Parent: " << ((origParent == NULL) ? 0 : origParent->value) << std::endl;
-	//std::cout << "Grandparent: " << ((origGrandparent == NULL) ? 0 : origGrandparent->value) << std::endl;
 	origParent->parent = child;
+	Node* origGrandchild;
 	if (left) { // Left rotate 
-		Node* origLGrandchild = child->lChild;
-		//std::cout << "Orig L Grandchild: " << origLGrandchild << std::endl;
+		origGrandchild = child->lChild;
 		child->lChild = origParent;
-		origParent->rChild = origLGrandchild;
-		if (origLGrandchild != NULL) origLGrandchild->parent = origParent;
-		//std::cout << "Child: " << child << std::endl;
-	//	std::cout << "Child: " << child->value << std::endl;
-		//std::cout << "Child Parent: " << child->parent->value << std::endl;
-	//	std::cout << "Child lChild: " << child->lChild->value << std::endl;
-	//	std::cout << "Child rChild: " << child->rChild << std::endl;
-	//	std::cout << "Orig Parent: " << origParent->value << std::endl;
-	//	std::cout << "Orig Parent Parent: " << origParent->parent->value << std::endl;
-	//	std::cout << "Orig Parent lChild: " << origParent->lChild << std::endl;
-	//	std::cout << "Orig Parent rChild: " << origParent->rChild->value << std::endl;
-	/** TODO: Implement RIGHT and LEFT "grandparents" */
+		origParent->rChild = origGrandchild;
 	} else { // Right rotate
-		Node* origRGrandchild = child->rChild;
+		origGrandchild = child->rChild;
 		child->rChild = origParent;
-		origParent->lChild = origRGrandchild;
-		if (origRGrandchild != NULL) origRGrandchild->parent = origParent;
+		origParent->lChild = origGrandchild;
 	}
+	if (origGrandchild != NULL) origGrandchild->parent = origParent; // Reconnect grandchild
 	if (origGrandparent == NULL) {
 		root = child;
 		return;
@@ -320,24 +270,13 @@ RedBlackTree<ElemType>::uncle(const Node* child) {
 template <typename ElemType>
 void RedBlackTree<ElemType>::restoreTree(Node* child) {
 	// NOTE: This should not get called on a NULL node, so child should never be NULL.
-	if (child == NULL) std::cout<< "NOOOO!" << std::endl;
-	if (root->red == true) {
-		//std::cout << "Case I: Redo Root Color.\n";
+	if (root->red == true) { // Root is wrong color.
 		root->red = false;
 		return;
-	}
-	if (child->parent == NULL) { // If node is root, recolor. 
-		//std::cout << "HELP!" << std::endl;
-		child->red = false;
-		return;
-	}
-	if (child->red && !child->parent->red) {
-		//std::cout << "Case II: Reg Insert. \n";
-		return; // Case I. Regular insertion.
-	}
+	} 
+	if (child->red && !child->parent->red) return; // Case I. Regular insertion. 
 	if (child->red && child->parent->red) {
 		if (uncle(child) != NULL && uncle(child)->red) { // Case II. Parent && Uncle are red.
-			//std::cout << "Case III: Parent Grandparent Color Swap. \n";
 			grandparent(child)->red = true; // Solution: Swap colors from grand gen to par gen
 			uncle(child)->red = false;
 			child->parent->red = false;
@@ -349,26 +288,21 @@ void RedBlackTree<ElemType>::restoreTree(Node* child) {
 			// NOTE: Grandparent should never be NULL if there's a red red discrepancy!
 			if (grandparent(child) == NULL) std::cout << "NO!" << std::endl;
 			if (grandparent(child)->lChild == child->parent && child == child->parent->rChild) {
-				//std::cout << "Case IV: Parent and Child are on diff sides -left. \n";
 				Node* origParent = child->parent;
 				rotate(child, true); // Left rotate
 				restoreTree(origParent); // Proceed to Case IV with new child.
 			} else if (grandparent(child)->rChild == child->parent && child == child->parent->lChild) {
-				//std::cout << "Case IV: Parent and Child are on diff sides -right. \n";
 				Node* origParent = child->parent;
 				rotate(child, false); // Right rotate
 				restoreTree(origParent); // Case IV
 			} else { // Case IV: Parent and Child are on same side.
 				/** Solution: Rotate parent and grandparent and then swap colors */
-				//std::cout << "Case V: Parent and Child on same sides. \n";
 				Node* origParent = child->parent;
 				Node* origGrandparent = grandparent(child);
 				origParent->red = origGrandparent->red;
 				origGrandparent->red = !origGrandparent->red;
 				if (origParent == origGrandparent->lChild) rotate(origParent, false);
 				else rotate(origParent, true);
-				//root->red = false; // Make sure root stays black
-				//restoreTree(origParent);
 			}
 		}
 	}
@@ -409,12 +343,7 @@ int RedBlackTree<ElemType>::blackHeight(Node* currNode, const bool left) const {
 template <typename ElemType>
 bool RedBlackTree<ElemType>::verifyBlackHeight(Node* currNode) const {
 	if (currNode == NULL) return true;
-	if (blackHeight(currNode, true) != blackHeight(currNode, false)) {
-		std::cout << "Curr Node: " << currNode->value << std::endl;
-		std::cout << "Left Black Height: " << blackHeight(currNode, true) << std::endl;
-		std::cout << "Right Black Height: " << blackHeight(currNode, false) << std::endl;
-		return false;
-	}
+	if (blackHeight(currNode, true) != blackHeight(currNode, false)) return false; 
 	if (!verifyBlackHeight(currNode->lChild) || !verifyBlackHeight(currNode->rChild)) return false;
 	return true;
 }
@@ -457,20 +386,8 @@ bool RedBlackTree<ElemType>::parentChildMatch() const {
 template <typename ElemType>
 bool RedBlackTree<ElemType>::parentChildMatch(Node* currNode) const {
 	if (currNode == NULL) return true;
-	if (currNode->lChild != NULL && currNode->lChild->parent != currNode) {
-		std::cout << "Curr Node: " << currNode->value << std::endl;
-		std::cout << "Left Child: " << currNode->lChild->value << std::endl;
-		std::cout << "Left Child Parent: " << currNode->lChild->parent->value << std::endl;
-		print();
-		return false;
-	}
-	if (currNode->rChild != NULL && currNode->rChild->parent != currNode) {
-		std::cout << "Curr Node: " << currNode->value << std::endl;
-		std::cout << "Left Child: " << currNode->lChild->value << std::endl;
-		std::cout << "Left Child Parent: " << currNode->lChild->parent->value << std::endl;
-		print();
-		return false;
-	}
+	if (currNode->lChild != NULL && currNode->lChild->parent != currNode) return false;
+	if (currNode->rChild != NULL && currNode->rChild->parent != currNode) return false;
 	if (!parentChildMatch(currNode->lChild) || !parentChildMatch(currNode->rChild)) return false;
 	return true;
 }

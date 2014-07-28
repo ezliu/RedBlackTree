@@ -108,23 +108,10 @@ TEST_F(RedBlackTreeTest, BlackHeightTest) {
 	}
 }
 
-void print(queue<int> &order) {
-	while (!order.empty()) {
-		std::cout << order.front() << ", ";
-		order.pop();
-	}
-}
-
 TEST_F(RedBlackTreeTest, RedChildTest) {
 	std::cout << "Inserting 1000 random integers [0, 4999] into tree and verifying that there red nodes only have black parents.\n";
 	queue<int> order;
 	for (int i = 0; i < 1000; i++) {
-		if (!myTree.verifyRedChild()) {
-		       myTree.print();
-		       print(order);
-		} else {
-			//myTree.print();
-		}
 		ASSERT_TRUE(myTree.verifyRedChild()) << "There are " << i << " elements in this tree.\n";
 		int next = rand()%5000;
 		myTree.insert(next);
