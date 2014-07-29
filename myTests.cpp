@@ -134,6 +134,12 @@ TEST_F(RedBlackTreeTest, CountTest) {
 	}
 }
 
+TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
+	for (int i = 0; i < 1000; i++) {
+		EXPECT_THROW(myTree.remove(i), std::invalid_argument);
+	}
+}
+
 int main(int argc, char **argv) {
 	srand(time(NULL));
 	::testing::InitGoogleTest(&argc, argv);

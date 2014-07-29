@@ -57,6 +57,9 @@ public:
 
     /** Checks if parents and children pointers match */
     bool parentChildMatch() const;
+
+    /** Deletes a node corresponding to the value if it exists in the tree */
+    void remove(const ElemType &value);
 private:
     //TODO: Move this back into private
     typedef struct Node {
@@ -401,5 +404,12 @@ template <typename ElemType>
 int RedBlackTree<ElemType>::count(const ElemType &value) const {
 	if (findNode(root, value) == NULL) return 0;
 	return findNode(root, value)->count;
+}
+
+/** Deletes an element from the tree if it exists. Otherwise, it throws an error */
+template <typename ElemType>
+void RedBlackTree<ElemType>::remove(const ElemType &value) {
+	Node* toDelete = findNode(root, value);
+	if (toDelete == NULL) throw std::invalid_argument("That value is not in the tree.");
 }
 #endif // REDBLACKTREE_H
