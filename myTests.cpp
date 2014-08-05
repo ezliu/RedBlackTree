@@ -134,6 +134,18 @@ TEST_F(RedBlackTreeTest, CountTest) {
 	}
 }
 
+TEST_F(RedBlackTreeTest, FullInsertTest) {
+	std::cout << "Inserting 10000 random integers [0, 999] into tree and verifying all tree properties.\n";
+	for (int i = 0; i < 10000; i++) {
+		EXPECT_TRUE(myTree.verifyBlackHeight());
+		EXPECT_TRUE(myTree.verifyRedChild());
+		EXPECT_TRUE(myTree.blackRoot());
+		EXPECT_TRUE(myTree.parentChildMatch());
+		myTree.insert(rand()%1000);
+	}
+}
+
+
 TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
 	for (int i = 0; i < 1000; i++) {
 		EXPECT_THROW(myTree.remove(i), std::invalid_argument);

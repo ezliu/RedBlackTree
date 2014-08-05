@@ -92,6 +92,9 @@ private:
     /** Returns the Uncle node */
     Node* uncle(const Node* child);
 
+    /** Returns sibling node */
+    Node* sibling(const Node* child);
+
     /** Fixes any errors in coloring from insertion/deletion */
     void restoreTree(Node* child);
 
@@ -270,6 +273,15 @@ RedBlackTree<ElemType>::uncle(const Node* child) {
 	if (grandparent(child) == NULL) return NULL;
 	if (grandparent(child)->rChild == child->parent) return grandparent(child)->lChild;
 	return grandparent(child)->rChild;
+}
+
+/** Returns sibling node */
+template <typename ElemType>
+typename RedBlackTree<ElemType>::Node*
+RedBlackTree<ElemType>::sibling(const Node* child) {
+	if (child == NULL || child->parent == NULL) return NULL;
+	if (child->parent->lChild == child) return child->parent->rChild;
+	return child->parent->lChild;
 }
 
 /** Gets called to restore red black properties */
