@@ -11,30 +11,47 @@ using namespace std;
 class RedBlackTreeTest: public ::testing::Test {
 	protected:
 		RedBlackTree<int> myTree;
-		virtual void SetUp();
-		virtual void TearDown();
+		void redChildTest();
+		void blackRootTest();
+		void parentChildMatchTest();
+		void blackHeightTest();
 };
 
-void RedBlackTreeTest::SetUp() {
-
+void RedBlackTreeTest::parentChildMatchTest() {
+	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying parent-child pointers.\n";
+	for (int i = 0; i < 1000; i++) {
+		myTree.insert(rand()%100);
+		EXPECT_TRUE(myTree.parentChildMatch());
+	}
 }
 
-void RedBlackTreeTest::TearDown() {
-	
+void RedBlackTreeTest::blackHeightTest() {
+	std::cout << "Inserting 1000 random integers [0, 199] into tree and verifying that black height is same for left and right branches for all nodes.\n";
+	for (int i = 0; i < 1000; i++) {
+		EXPECT_TRUE(myTree.verifyBlackHeight());
+		int next = rand()%100;
+		myTree.insert(next);
+	}
 }
 
-namespace testing {
-
-	AssertionResult AssertionSuccess();
-
-	AssertionResult AssertionFailure();
-
-
+void RedBlackTreeTest::blackRootTest() {
+	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying that root is black.\n";
+	for (int i = 0; i < 1000; i++) {
+		EXPECT_TRUE(myTree.blackRoot());
+		int next = rand()%100;
+		myTree.insert(next);
+	}
 }
 
-::testing::AssertionResult IsZero(int n) {
-	if (n == 0) return ::testing::AssertionSuccess() << n << " is zero.";
-	else return::testing::AssertionFailure() << n << " is not zero.";
+void RedBlackTreeTest::redChildTest() {
+	std::cout << "Inserting 1000 random integers [0, 4999] into tree and verifying that there red nodes only have black parents.\n";
+	queue<int> order;
+	for (int i = 0; i < 1000; i++) {
+		ASSERT_TRUE(myTree.verifyRedChild()) << "There are " << i << " elements in this tree.\n";
+		int next = rand()%5000;
+		myTree.insert(next);
+		order.push(next);
+	}
 }
 
 TEST_F(RedBlackTreeTest, SanityCheck) {
@@ -85,40 +102,19 @@ TEST_F(RedBlackTreeTest, AdvancedContainsTest) {
 }
 
 TEST_F(RedBlackTreeTest, ParentChildMatchTest) {
-	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying parent-child pointers.\n";
-	for (int i = 0; i < 1000; i++) {
-		myTree.insert(rand()%100);
-		EXPECT_TRUE(myTree.parentChildMatch());
-	}
+	parentChildMatchTest();
 }
 
 TEST_F(RedBlackTreeTest, BlackRootTest) {
-	std::cout << "Inserting 1000 random integers [0, 99] into tree and verifying that root is black.\n";
-	for (int i = 0; i < 1000; i++) {
-		EXPECT_TRUE(myTree.blackRoot());
-		int next = rand()%100;
-		myTree.insert(next);
-	}
+	blackRootTest();
 }
 
 TEST_F(RedBlackTreeTest, BlackHeightTest) {
-	std::cout << "Inserting 1000 random integers [0, 199] into tree and verifying that black height is same for left and right branches for all nodes.\n";
-	for (int i = 0; i < 1000; i++) {
-		EXPECT_TRUE(myTree.verifyBlackHeight());
-		int next = rand()%100;
-		myTree.insert(next);
-	}
+	blackHeightTest();
 }
 
 TEST_F(RedBlackTreeTest, RedChildTest) {
-	std::cout << "Inserting 1000 random integers [0, 4999] into tree and verifying that there red nodes only have black parents.\n";
-	queue<int> order;
-	for (int i = 0; i < 1000; i++) {
-		ASSERT_TRUE(myTree.verifyRedChild()) << "There are " << i << " elements in this tree.\n";
-		int next = rand()%5000;
-		myTree.insert(next);
-		order.push(next);
-	}
+	redChildTest();
 }
 
 TEST_F(RedBlackTreeTest, CountTest) {
@@ -138,10 +134,7 @@ TEST_F(RedBlackTreeTest, CountTest) {
 TEST_F(RedBlackTreeTest, FullInsertTest) {
 	std::cout << "Inserting 10000 random integers [0, 999] into tree and verifying all tree properties.\n";
 	for (int i = 0; i < 10000; i++) {
-		EXPECT_TRUE(myTree.verifyBlackHeight());
-		EXPECT_TRUE(myTree.verifyRedChild());
-		EXPECT_TRUE(myTree.blackRoot());
-		EXPECT_TRUE(myTree.parentChildMatch());
+		EXPECT_TRUE(myTree.verifyProperties());
 		myTree.insert(rand()%1000);
 	}
 }
@@ -153,7 +146,7 @@ TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
 	}
 }
 
-TEST_F(RedBlackTreeTest, TrivialDeleteTest) {
+TEST_F(RedBlackTreeTest, BasicDeleteTest) {
 	std::cout << "Inserting 1 into the tree 1000 times." << std::endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.insert(1);
@@ -162,13 +155,11 @@ TEST_F(RedBlackTreeTest, TrivialDeleteTest) {
 	std::cout << "Deleting 1 from the tree 1000 times and verifying tree properties." << std::endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.remove(1);
-		EXPECT_TRUE(myTree.verifyBlackHeight());
-		EXPECT_TRUE(myTree.verifyRedChild());
-		EXPECT_TRUE(myTree.parentChildMatch());
+		EXPECT_TRUE(myTree.verifyProperties());
 	}
 }
 
-TEST_F(RedBlackTreeTest, SlightlyLessTrivialDeleteTest) {
+TEST_F(RedBlackTreeTest, DeleteTest) {
 	std::cout << "Inserting integers 0 to 999 into tree." << std::endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.insert(i);
@@ -179,15 +170,13 @@ TEST_F(RedBlackTreeTest, SlightlyLessTrivialDeleteTest) {
 	std::cout << "Deleting integers 0 to 999 in backwards order and verifying all properties." << std::endl;
 	for (int i = 999; i >= 0; i--) {
 		myTree.remove(i);
-		if (myTree.verifyBlackHeight() && myTree.verifyRedChild() && myTree.parentChildMatch()) {
-			counter++;
-		}
+		if (myTree.verifyProperties()) counter++;
 	}
 
 	EXPECT_EQ(1000, counter);
 }
 
-TEST_F(RedBlackTreeTest, FullTest) {
+TEST_F(RedBlackTreeTest, ComprehensiveDeleteTest) {
 	map<int, int> in_tree;
 	vector<int> order;
 	std::cout << "Inserting 10000 random integers [0, 30000) into tree." << std::endl;
@@ -200,13 +189,10 @@ TEST_F(RedBlackTreeTest, FullTest) {
 
 	random_shuffle(order.begin(), order.end());
 
-	cout << "PASS?" << myTree.verifyProperties() << endl;
 	std::cout << "Deleting inserted integers in random order, and verifying that delete works properly" << std::endl;
 	for (int i = 0; i < 10000; i++) {
-		//myTree.print();
 		int next = order.back();
 		order.pop_back();
-		cout << "Deleting: " << next << endl;
 		if (in_tree[next] != 0) {
 			--in_tree[next];
 			myTree.remove(next);
@@ -215,7 +201,46 @@ TEST_F(RedBlackTreeTest, FullTest) {
 			EXPECT_THROW(myTree.remove(next), std::invalid_argument);
 		}
 	}
+}
 
+TEST_F(RedBlackTreeTest, ComprehensiveTest) {
+	for (int j = 0; j < 10; j++) {
+		std::cout << "Inserting 10000 random integers [0, 30000) into tree." << std::endl;
+		map<int, int> in_tree;
+		vector<int> order;
+		for (int i = 0; i < 10000; i++) {
+			int next = rand()%30000;
+			order.push_back(next);
+			in_tree[next]++;
+			myTree.insert(next);
+		}
+
+		EXPECT_FALSE(myTree.empty());
+		EXPECT_EQ(10000, myTree.size());
+		EXPECT_TRUE(myTree.verifyProperties());
+
+		random_shuffle(order.begin(), order.end());
+		
+		std::cout << "Deleting inserted integers in random order" << std::endl;
+
+		for (int i = 0; i < 10000; i++) {
+			int next = order.back();
+			order.pop_back();
+			if (in_tree[next] != 0) {
+				--in_tree[next];
+				myTree.remove(next);
+			} else {
+				EXPECT_THROW(myTree.remove(next), std::invalid_argument);
+			}
+		}
+		EXPECT_TRUE(myTree.empty());
+		EXPECT_EQ(0, myTree.size());
+		EXPECT_TRUE(myTree.verifyProperties());
+	}
+}
+
+TEST_F(RedBlackTreeTest, TimedTests) {
+	
 }
 
 int main(int argc, char **argv) {

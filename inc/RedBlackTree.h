@@ -6,7 +6,9 @@
 #include <queue>
 #include <iostream>
 
-/** Red Black Tree as implemented by Evan Liu
+/** Copyright (c) 2014 Evan Liu
+ *
+ * Red Black Tree as implemented by Evan Liu.
  *
  * Satisfies the following (MIT OpenCourseware as resource):
  *
@@ -14,12 +16,13 @@
  * 2) Root and NULL leaves are black.
  * 3) Each red node must have two black child nodes.
  * 4) Any path from a node to its descendant leaves has the same number of
- * black nodes.
+ * black nodes. 
+ *
  */
-
 
 template <typename ElemType>
 class RedBlackTree {
+friend class RedBlackTreeTest;
 public:
     RedBlackTree();
     /** Destructor */
@@ -40,23 +43,11 @@ public:
     /** Prints out the tree */
     void print() const;
 
-    /** Recursive wrapper for verifying red nodes have only black children */
-    bool verifyRedChild() const;
-
-    /** Recursive wrapper for verifying all black heights are equal */
-    bool verifyBlackHeight() const;
-
     /** Checks if an element is in the tree */
     bool contains(const ElemType& value) const;
 
     /** Returns the number of times an element is in the tree. */
     int count(const ElemType& value) const;
-
-    /** Checks if the root is black */
-    bool blackRoot() const;
-
-    /** Checks if parents and children pointers match */
-    bool parentChildMatch() const;
 
     /** Deletes a node corresponding to the value if it exists in the tree */
     void remove(const ElemType &value);
@@ -64,7 +55,6 @@ public:
     /** Wrapper for verifying all RB Properties */
     bool verifyProperties() const;
 private:
-    //TODO: Move this back into private
     typedef struct Node {
 	    Node* parent;
 	    ElemType value;
@@ -131,6 +121,18 @@ private:
 
     /** Restores tree properties after delete. */
     void deleteRestoreTree(Node* parent, Node* not_sibling);
+
+    /** Recursive wrapper for verifying red nodes have only black children */
+    bool verifyRedChild() const;
+
+    /** Recursive wrapper for verifying all black heights are equal */
+    bool verifyBlackHeight() const;
+
+    /** Checks if the root is black */
+    bool blackRoot() const;
+
+    /** Checks if parents and children pointers match */
+    bool parentChildMatch() const;
 };
 
 /**
@@ -492,13 +494,8 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 	}
 	if (parent->rChild != not_sibling) sibling = parent->rChild;
 
-	std::cout << "Parent: " << parent->value << std::endl;
-	std::cout << "Sibling: ";
-	if (sibling != NULL) std::cout << sibling->value << std::endl;
-
 	/** Case I: Sibling is red => Parent is black */
 	if (sibling->red) {
-		std::cout << "Case I" << std::endl;
 		sibling->red = parent->red;
 		parent->red = !parent->red;
 		rotate(sibling, !left);
@@ -507,19 +504,16 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 	     	   (sibling->lChild == NULL || !sibling->lChild->red) &&
 		   (sibling->rChild == NULL || !sibling->rChild->red)) {
 	/** Case II: Parent is black. Sibling is black. Both sibling children are black or NULL. */
-		std::cout << "Case II" << std::endl;
 		sibling->red = true; // Just recolor.
 		deleteRestoreTree(parent->parent, parent);
 	} else if (parent->red && (sibling->lChild == NULL || !sibling->lChild->red)
 			       && (sibling->rChild == NULL || !sibling->rChild->red)) { 
 	/** Case III: Parent is red => Sibling must be black. And both sibling children must
 	 * be black or NULL. */
-		std::cout << "Case III" << std::endl;
 		sibling->red = parent->red;
 		parent->red = !parent->red; // Just swap colors
 	} else if ((!left && (sibling->rChild == NULL || !sibling->rChild->red) && sibling->lChild->red) || ((left && (sibling->lChild == NULL || !sibling->lChild->red)) && sibling->rChild->red)) {
 	/** Case IV: Inside sibling child is red. Outside sibling child is black. */
-		std::cout << "Case IV" << std::endl;
 		Node* child;
 		if (left) child = sibling->rChild;
 		else child = sibling->lChild;
@@ -530,7 +524,6 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 	} else if ((!left && sibling->rChild != NULL && sibling->rChild->red) ||
 	           (left && sibling->lChild != NULL && sibling->lChild->red)) {
 	/** Case V: If the outer sibling child is red */
-		std::cout << "Case V" << std::endl;
 		bool temp;
 		temp = sibling->red;
 		sibling->red = parent->red;
