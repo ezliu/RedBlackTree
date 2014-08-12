@@ -171,7 +171,12 @@ RedBlackTree<ElemType>::RedBlackTree(const RedBlackTree<ElemType> &other):
 /** Assignment Operator */
 template <typename ElemType>
 RedBlackTree<ElemType>& RedBlackTree<ElemType>::operator= (const RedBlackTree &other) {
-
+	if (this != &other) {
+		clear();
+		numElems = other.numElems;
+		copyTree(other.root, root, NULL);
+	}
+	return *this;
 }
 
 /** Destructor */
@@ -204,6 +209,7 @@ template <typename ElemType>
 void RedBlackTree<ElemType>::clear() {
 	recursiveDelete(root);
 	numElems = 0;
+	root = NULL;
 }
 
 //TODO: Implement a DEBUG STRING 

@@ -269,12 +269,14 @@ void ConstructorTests::TearDown() {
 }
 
 TEST_F(ConstructorTests, BasicCopyConstructorTest) {
+	cout << "Making copy using copy constructor and testing copy.\n";
 	RedBlackTree<int> copy(myTree);
 	EXPECT_FALSE(copy.size() == 0);
-	for (int i = 0; i < k_max; i++ ) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
 }
 
 TEST_F(ConstructorTests, CopyConstructorIndependenceTest) {
+	cout << "Testing that changing copy does not change original.\n";
 	RedBlackTree<int> copy(myTree);
 	map<int, int> copy_elems_in_tree = elems_in_tree;
 	for (int i = 0; i < k_max; i++) {
@@ -287,6 +289,49 @@ TEST_F(ConstructorTests, CopyConstructorIndependenceTest) {
 
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(myTree.count(i), elems_in_tree[i]);
 }
+
+TEST_F(ConstructorTests, BasicAssignmentOperatorTest) {
+	cout << "Making a copy using assignment operator and checking that the copy worked." << endl;
+	RedBlackTree<int> copy;
+	copy = myTree;
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
+}
+
+TEST_F(ConstructorTests, AssignmentOperatorEdgeCases) {
+	cout << "Inserting 1000 random integers into a RBTree" << endl;
+	RedBlackTree<int> copy;
+	for (int i = 0; i < 1000; i++) copy.insert(rand()%k_max);
+
+	cout << "Making a copy of that RB Tree" << endl;
+	RedBlackTree<int> copy_two = copy;
+
+	cout << "Copying the original tree and checking that everything was copied properly." << endl;
+	copy = myTree;
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
+	
+	cout << "Inserting 1000 new random integers into the copied tree" << endl;
+	for (int i = 0; i < 1000; i++) copy.insert(rand()%k_max);
+
+	cout << "Testing that we can string together multiply assignment operations" << endl;
+	copy_two = copy = myTree;
+
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy_two.count(i), elems_in_tree[i]);
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(myTree.count(i), elems_in_tree[i]);
+
+	EXPECT_EQ(copy.size(), myTree.size());
+	EXPECT_EQ(copy.size(), copy_two.size());
+
+	cout << "Deleting all elements of copy and checking that it doesn't affect others" << endl;
+	copy.clear();
+
+	ASSERT_EQ(0, copy.size());
+	ASSERT_EQ(1000, copy_two.size());
+	ASSERT_EQ(1000, myTree.size());
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy_two.count(i), elems_in_tree[i]);
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(myTree.count(i), elems_in_tree[i]);
+}
+
 
 int main(int argc, char **argv) {
 	srand(time(NULL));
