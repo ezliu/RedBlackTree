@@ -48,6 +48,9 @@ public:
     /** Returns a debug stringstream */
 //    std::stringstream& debugString() const;
 
+    /** Returns a debug string */
+    std::string debugString() const;
+
     /** Prints out the tree */
     void print() const;
 
@@ -212,13 +215,10 @@ void RedBlackTree<ElemType>::clear() {
 	root = NULL;
 }
 
-//TODO: Implement a DEBUG STRING 
-
-
-/** Prints out the tree by enqueueing all of the elements in order by 
- * tree level */
+/** Returns a debug string */
 template <typename ElemType>
-void RedBlackTree<ElemType>::print() const {
+std::string RedBlackTree<ElemType>::debugString() const {
+	std::stringstream converter;
 	std::queue<Node*> myQueue;
 	myQueue.push(root); // Start with root
 	std::queue<Node*> nextQueue;
@@ -229,7 +229,7 @@ void RedBlackTree<ElemType>::print() const {
 		if (nextNode == NULL) { // Enqueue root node 
 			nextQueue.push(NULL); // Put in two NULL children
 			nextQueue.push(NULL);
-			std::cout << "NULL (b,0) ";
+			converter << "NULL (b,0) ";
 		} else {
 			Node* lChild = nextNode->lChild; //Enqueue both children nodes 
 			Node* rChild = nextNode->rChild;
@@ -237,18 +237,26 @@ void RedBlackTree<ElemType>::print() const {
 			else nextQueue.push(nextNode->lChild);
 			if (rChild == NULL) nextQueue.push(NULL);
 			else nextQueue.push(nextNode->rChild);
-			std::cout << nextNode->value; // Print currNode
-			std::cout << " (" << ((nextNode->red) ? "r," : "b,");
-			std::cout << nextNode->count << ") ";
+			converter << nextNode->value; // Print currNode
+			converter << " (" << ((nextNode->red) ? "r," : "b,");
+			converter << nextNode->count << ") ";
 			allNull = false;
 		}
 		if (myQueue.empty()) {
-			std::cout << std::endl;
-			if (allNull) return; // Continue until all leaf nodes
+			converter << std::endl;
+			if (allNull) break; // Continue until all leaf nodes
 			allNull = true;
 			std::swap(myQueue, nextQueue); // Move onto next level of tree
 		}
 	}
+	return converter.str();
+}
+
+/** Prints out the tree by enqueueing all of the elements in order by 
+ * tree level */
+template <typename ElemType>
+void RedBlackTree<ElemType>::print() const {
+	std::cout << debugString() << std::endl;
 }
 
 /** Recursively inserts an element into tree and then restores the tree properties */
