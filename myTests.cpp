@@ -152,6 +152,38 @@ TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
 	}
 }
 
+TEST_F(RedBlackTreeTest, TrivialDeleteTest) {
+	for (int i = 0; i < 1000; i++) {
+		myTree.insert(1);
+	}
+
+	for (int i = 0; i < 1000; i++) {
+		myTree.remove(1);
+		EXPECT_TRUE(myTree.verifyBlackHeight());
+		EXPECT_TRUE(myTree.verifyRedChild());
+		EXPECT_TRUE(myTree.parentChildMatch());
+	}
+}
+
+TEST_F(RedBlackTreeTest, SlightlyLessTrivialDeleteTest) {
+	for (int i = 0; i < 1000; i++) {
+		myTree.insert(i);
+	}
+
+	int counter = 0;
+
+	for (int i = 0; i < 1000; i++) {
+		//myTree.print();
+		myTree.remove(i);
+		if (myTree.verifyBlackHeight() && myTree.verifyRedChild() && myTree.parentChildMatch()) {
+			counter++;
+			std::cout << "Correct!" << std::endl;
+		}
+	}
+
+	EXPECT_EQ(10, counter);
+}
+
 int main(int argc, char **argv) {
 	srand(time(NULL));
 	::testing::InitGoogleTest(&argc, argv);
