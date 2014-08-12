@@ -24,7 +24,15 @@ template <typename ElemType>
 class RedBlackTree {
 friend class RedBlackTreeTest;
 public:
+    /** Constructor */
     RedBlackTree();
+
+    /** Copy Constructor */
+    RedBlackTree(const RedBlackTree<ElemType> &other);
+
+    /** Assignment Operator */
+    RedBlackTree<ElemType>& operator= (const RedBlackTree<ElemType> &other);
+
     /** Destructor */
     ~RedBlackTree();
     
@@ -54,6 +62,10 @@ public:
 
     /** Wrapper for verifying all RB Properties */
     bool verifyProperties() const;
+    
+    /** Clears the tree */
+    void clear();
+
 private:
     typedef struct Node {
 	    Node* parent;
@@ -133,6 +145,9 @@ private:
 
     /** Checks if parents and children pointers match */
     bool parentChildMatch() const;
+
+    /** Copies a tree recursively */
+    void copyTree(const Node* from, Node* &into, Node* const parent);
 };
 
 /**
@@ -144,6 +159,20 @@ RedBlackTree<ElemType>::RedBlackTree():
 	root(NULL),
 	numElems(0)
 {}
+
+/** Copy Constructor */
+template <typename ElemType>
+RedBlackTree<ElemType>::RedBlackTree(const RedBlackTree<ElemType> &other):
+	numElems(other.numElems)
+{
+	copyTree(other.root, root, NULL);
+}
+
+/** Assignment Operator */
+template <typename ElemType>
+RedBlackTree<ElemType>& RedBlackTree<ElemType>::operator= (const RedBlackTree &other) {
+
+}
 
 /** Destructor */
 template <typename ElemType>
@@ -168,6 +197,13 @@ int RedBlackTree<ElemType>::size() const {
 template <typename ElemType>
 bool RedBlackTree<ElemType>::empty() const {
 	return size() == 0;
+}
+
+/** Clears the tree */
+template <typename ElemType>
+void RedBlackTree<ElemType>::clear() {
+	recursiveDelete(root);
+	numElems = 0;
 }
 
 //TODO: Implement a DEBUG STRING 
@@ -602,4 +638,20 @@ template <typename ElemType>
 bool RedBlackTree<ElemType>::verifyProperties() const {
 	return verifyRedChild() && parentChildMatch() && verifyBlackHeight() && blackRoot();
 }
+
+/** Helper function that copies a tree recursively */
+template <typename ElemType>
+void RedBlackTree<ElemType>::copyTree(const Node* from, Node* &into, Node* const parent) {
+	if (from == NULL) into = NULL;
+	else {
+		into = new Node;
+		into->parent = parent;
+		into->value = from->value;
+		into->count = from->count;
+		into->red = from->red;
+		copyTree(from->lChild, into->lChild, into);
+		copyTree(from->rChild, into->rChild, into);
+	}
+}
+
 #endif // REDBLACKTREE_H
