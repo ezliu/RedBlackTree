@@ -4,6 +4,7 @@
 #include <cstdlib>
 #include <set>
 #include <map>
+#include <algorithm>
 
 using namespace std;
 
@@ -153,10 +154,12 @@ TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
 }
 
 TEST_F(RedBlackTreeTest, TrivialDeleteTest) {
+	std::cout << "Inserting 1 into the tree 1000 times." << std::endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.insert(1);
 	}
 
+	std::cout << "Deleting 1 from the tree 1000 times and verifying tree properties." << std::endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.remove(1);
 		EXPECT_TRUE(myTree.verifyBlackHeight());
@@ -166,22 +169,53 @@ TEST_F(RedBlackTreeTest, TrivialDeleteTest) {
 }
 
 TEST_F(RedBlackTreeTest, SlightlyLessTrivialDeleteTest) {
+	std::cout << "Inserting integers 0 to 999 into tree." << std::endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.insert(i);
 	}
 
 	int counter = 0;
 
-	for (int i = 0; i < 1000; i++) {
-		//myTree.print();
+	std::cout << "Deleting integers 0 to 999 in backwards order and verifying all properties." << std::endl;
+	for (int i = 999; i >= 0; i--) {
 		myTree.remove(i);
 		if (myTree.verifyBlackHeight() && myTree.verifyRedChild() && myTree.parentChildMatch()) {
 			counter++;
-			std::cout << "Correct!" << std::endl;
 		}
 	}
 
-	EXPECT_EQ(10, counter);
+	EXPECT_EQ(1000, counter);
+}
+
+TEST_F(RedBlackTreeTest, FullTest) {
+	map<int, int> in_tree;
+	vector<int> order;
+	std::cout << "Inserting 10000 random integers [0, 30000) into tree." << std::endl;
+	for (int i = 0; i < 10000; i++) {
+		int next = rand()%30000;
+		order.push_back(next);
+		in_tree[next]++;
+		myTree.insert(next);
+	}
+
+	random_shuffle(order.begin(), order.end());
+
+	cout << "PASS?" << myTree.verifyProperties() << endl;
+	std::cout << "Deleting inserted integers in random order, and verifying that delete works properly" << std::endl;
+	for (int i = 0; i < 10000; i++) {
+		//myTree.print();
+		int next = order.back();
+		order.pop_back();
+		cout << "Deleting: " << next << endl;
+		if (in_tree[next] != 0) {
+			--in_tree[next];
+			myTree.remove(next);
+			EXPECT_TRUE(myTree.verifyProperties()) << "Count: " << i << endl << "Number: " << next << endl << "Amount-1: " << in_tree[next] << endl;
+		} else {
+			EXPECT_THROW(myTree.remove(next), std::invalid_argument);
+		}
+	}
+
 }
 
 int main(int argc, char **argv) {

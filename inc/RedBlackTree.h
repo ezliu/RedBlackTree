@@ -60,6 +60,9 @@ public:
 
     /** Deletes a node corresponding to the value if it exists in the tree */
     void remove(const ElemType &value);
+
+    /** Wrapper for verifying all RB Properties */
+    bool verifyProperties() const;
 private:
     //TODO: Move this back into private
     typedef struct Node {
@@ -480,50 +483,38 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 	/** Case I: */
 	if (parent == NULL) return;
 	
+	/** Find the sibling node */
 	Node* sibling;
 	bool left = false;
 	if (parent->lChild != not_sibling) {
 		sibling = parent->lChild;
 		left = true;
 	}
-	if (parent->rChild != not_sibling) {
-		sibling = parent->rChild;
-		left = false;
-	}
-	std::cout << "Parent: " << parent->value << parent->red << std::endl;
-	std::cout << "Parent's lChild: ";
-	if (parent->lChild != NULL) std::cout << parent->lChild->value << parent->lChild->red << std::endl;
-	else std::cout << "NULL" << std::endl;
-	std::cout << "Parent's rChild: ";
-	if (parent->rChild != NULL) std::cout << parent->rChild->value << parent->rChild->red <<  std::endl;
-	else std::cout << "NULL" << std::endl;
-	std::cout << "Sibling: " << sibling->value << sibling->red << std::endl;
-	std::cout << "Sibling lChild: ";
-	if (sibling->lChild != NULL) std::cout << sibling->lChild->value << sibling->lChild->red <<  std::endl;
-	else std::cout << "NULL" << std::endl;
-	std::cout << "Sibling rChild: ";
-	if (sibling->rChild != NULL) std::cout << sibling->rChild->value << sibling->rChild->red <<  std::endl;
-	else std::cout << "NULL" << std::endl;
-	
-	/** Case I: Sibling is red => Parent is black */
+	if (parent->rChild != not_sibling) sibling = parent->rChild;
 
+	std::cout << "Parent: " << parent->value << std::endl;
+	std::cout << "Sibling: ";
+	if (sibling != NULL) std::cout << sibling->value << std::endl;
+
+	/** Case I: Sibling is red => Parent is black */
 	if (sibling->red) {
 		std::cout << "Case I" << std::endl;
 		sibling->red = parent->red;
 		parent->red = !parent->red;
 		rotate(sibling, !left);
 		deleteRestoreTree(parent, not_sibling);
-		std::cout << "Where is that seg" << std::endl;
 	} else if (!parent->red && !sibling->red &&
 	     	   (sibling->lChild == NULL || !sibling->lChild->red) &&
 		   (sibling->rChild == NULL || !sibling->rChild->red)) {
-		std::cout << "Case II" << std::endl;
 	/** Case II: Parent is black. Sibling is black. Both sibling children are black or NULL. */
+		std::cout << "Case II" << std::endl;
 		sibling->red = true; // Just recolor.
 		deleteRestoreTree(parent->parent, parent);
-	} else if (parent->red) {
+	} else if (parent->red && (sibling->lChild == NULL || !sibling->lChild->red)
+			       && (sibling->rChild == NULL || !sibling->rChild->red)) { 
+	/** Case III: Parent is red => Sibling must be black. And both sibling children must
+	 * be black or NULL. */
 		std::cout << "Case III" << std::endl;
-	/** Case III: Parent is red => Sibling must be black. */
 		sibling->red = parent->red;
 		parent->red = !parent->red; // Just swap colors
 	} else if ((!left && (sibling->rChild == NULL || !sibling->rChild->red) && sibling->lChild->red) || ((left && (sibling->lChild == NULL || !sibling->lChild->red)) && sibling->rChild->red)) {
@@ -533,8 +524,9 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 		if (left) child = sibling->rChild;
 		else child = sibling->lChild;
 		sibling->red = child->red;
-		child->red = !child->red;
+		child->red = !child->red; // Swap colors and rotate into case V.
 		rotate(child, left);
+		deleteRestoreTree(parent, not_sibling);
 	} else if ((!left && sibling->rChild != NULL && sibling->rChild->red) ||
 	           (left && sibling->lChild != NULL && sibling->lChild->red)) {
 	/** Case V: If the outer sibling child is red */
@@ -542,10 +534,10 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 		bool temp;
 		temp = sibling->red;
 		sibling->red = parent->red;
-		parent->red = temp;
+		parent->red = temp; //Swap colors
 		if (!left) sibling->rChild->red = false;
-		else sibling->lChild->red = false;
-		rotate(sibling, !left);
+		else sibling->lChild->red = false; // Turn outer sibling child black
+		rotate(sibling, !left); // Rotate
 	}
 }
 	
@@ -554,7 +546,6 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 template <typename ElemType>
 void RedBlackTree<ElemType>::rbDelete(Node* currNode) {
 	/** NOTE: Should only get called when currNode is non-NULL */
-	if (currNode == NULL) printf("WHY");
 	int nullChildren = numNullChildren(currNode);
 	switch (nullChildren) {
 		/** Case 0: Node has two non-NULL children.
@@ -611,5 +602,11 @@ void RedBlackTree<ElemType>::rbDelete(Node* currNode) {
 			break;	
 		}
 	}
+}
+
+/** Wrapper for verifying all RB Properties */
+template <typename ElemType>
+bool RedBlackTree<ElemType>::verifyProperties() const {
+	return verifyRedChild() && parentChildMatch() && verifyBlackHeight() && blackRoot();
 }
 #endif // REDBLACKTREE_H
