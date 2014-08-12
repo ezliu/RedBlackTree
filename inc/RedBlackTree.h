@@ -59,9 +59,6 @@ public:
 
     /** Deletes a node corresponding to the value if it exists in the tree */
     void remove(const ElemType &value);
-
-    /** Wrapper for verifying all RB Properties */
-    bool verifyProperties() const;
     
     /** Clears the tree */
     void clear();
@@ -148,6 +145,9 @@ private:
 
     /** Copies a tree recursively */
     void copyTree(const Node* from, Node* &into, Node* const parent);
+
+    /** Wrapper for verifying all RB Properties */
+    bool verifyProperties() const;
 };
 
 /**

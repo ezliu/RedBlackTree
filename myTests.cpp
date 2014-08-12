@@ -15,6 +15,12 @@ class RedBlackTreeTest: public ::testing::Test {
 		void blackRootTest();
 		void parentChildMatchTest();
 		void blackHeightTest();
+		void FullInsertTest();
+		void BasicDeleteTest();
+		void DeleteTest();
+		void ComprehensiveDeleteTest();
+		void ComprehensiveTest();
+
 };
 
 void RedBlackTreeTest::parentChildMatchTest() {
@@ -134,12 +140,16 @@ TEST_F(RedBlackTreeTest, CountTest) {
 	}
 }
 
-TEST_F(RedBlackTreeTest, FullInsertTest) {
+void RedBlackTreeTest::FullInsertTest() {
 	cout << "Inserting 10000 random integers [0, 999] into tree and verifying all tree properties.\n";
 	for (int i = 0; i < 10000; i++) {
 		EXPECT_TRUE(myTree.verifyProperties());
 		myTree.insert(rand()%1000);
 	}
+}
+
+TEST_F(RedBlackTreeTest, FullInsertTest) {
+	FullInsertTest();
 }
 
 
@@ -149,7 +159,7 @@ TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
 	}
 }
 
-TEST_F(RedBlackTreeTest, BasicDeleteTest) {
+void RedBlackTreeTest::BasicDeleteTest() {
 	cout << "Inserting 1 into the tree 1000 times." << endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.insert(1);
@@ -162,7 +172,11 @@ TEST_F(RedBlackTreeTest, BasicDeleteTest) {
 	}
 }
 
-TEST_F(RedBlackTreeTest, DeleteTest) {
+TEST_F(RedBlackTreeTest, BasicDeleteTest) {
+	BasicDeleteTest();
+}
+
+void RedBlackTreeTest::DeleteTest() {
 	cout << "Inserting integers 0 to 999 into tree." << endl;
 	for (int i = 0; i < 1000; i++) {
 		myTree.insert(i);
@@ -179,7 +193,11 @@ TEST_F(RedBlackTreeTest, DeleteTest) {
 	EXPECT_EQ(1000, counter);
 }
 
-TEST_F(RedBlackTreeTest, ComprehensiveDeleteTest) {
+TEST_F(RedBlackTreeTest, DeleteTest) {
+	DeleteTest();
+}
+
+void RedBlackTreeTest::ComprehensiveDeleteTest() {
 	map<int, int> in_tree;
 	vector<int> order;
 	cout << "Inserting 10000 random integers [0, 30000) into tree." << endl;
@@ -206,7 +224,11 @@ TEST_F(RedBlackTreeTest, ComprehensiveDeleteTest) {
 	}
 }
 
-TEST_F(RedBlackTreeTest, ComprehensiveTest) {
+TEST_F(RedBlackTreeTest, ComprehensiveDeleteTest) {
+	ComprehensiveDeleteTest();
+}
+
+void RedBlackTreeTest::ComprehensiveTest() {
 	for (int j = 0; j < 10; j++) {
 		cout << "Inserting 10000 random integers [0, 30000) into tree." << endl;
 		map<int, int> in_tree;
@@ -240,6 +262,10 @@ TEST_F(RedBlackTreeTest, ComprehensiveTest) {
 		EXPECT_EQ(0, myTree.size());
 		EXPECT_TRUE(myTree.verifyProperties());
 	}
+}
+
+TEST_F(RedBlackTreeTest, ComprehensiveTest) {
+	ComprehensiveTest();
 }
 
 class ConstructorTests: public ::testing::Test {
