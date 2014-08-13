@@ -20,6 +20,7 @@ class RedBlackTreeTest: public ::testing::Test {
 		void DeleteTest();
 		void ComprehensiveDeleteTest();
 		void ComprehensiveTest();
+		void HighDensityDeleteTest();
 
 };
 
@@ -28,36 +29,48 @@ void RedBlackTreeTest::parentChildMatchTest() {
 	int modulo = 300;
 	cout << "Inserting " << num_insert << " random integers [0, " 
 	     << modulo-1 << "] into tree and verifying parent-child pointers.\n";
-	for (int i = 0; i < 1000; i++) {
-		myTree.insert(rand()%100);
+	for (int i = 0; i < num_insert; i++) {
+		myTree.insert(rand()%modulo);
 		EXPECT_TRUE(myTree.parentChildMatch());
 	}
 }
 
 void RedBlackTreeTest::blackHeightTest() {
-	cout << "Inserting 1000 random integers [0, 199] into tree and verifying that black height is same for left and right branches for all nodes.\n";
-	for (int i = 0; i < 1000; i++) {
+	int num_insert = 1000;
+	int modulo = 300;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree and verifying black height is the same for left and right "
+	     << "branches for all nodes.\n";
+	for (int i = 0; i < num_insert; i++) {
 		EXPECT_TRUE(myTree.verifyBlackHeight());
-		int next = rand()%100;
+		int next = rand()%modulo;
 		myTree.insert(next);
 	}
 }
 
 void RedBlackTreeTest::blackRootTest() {
-	cout << "Inserting 1000 random integers [0, 99] into tree and verifying that root is black.\n";
-	for (int i = 0; i < 1000; i++) {
+	int num_insert = 1000;
+	int modulo = 300;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree and verifying that the root is always black.\n";
+
+	for (int i = 0; i < num_insert; i++) {
 		EXPECT_TRUE(myTree.blackRoot());
-		int next = rand()%100;
+		int next = rand()%modulo;
 		myTree.insert(next);
 	}
 }
 
 void RedBlackTreeTest::redChildTest() {
-	cout << "Inserting 1000 random integers [0, 4999] into tree and verifying that there red nodes only have black parents.\n";
+	int num_insert = 1000;
+	int modulo = 5000;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree and verifying that red nodes only have black parents.\n";
+
 	queue<int> order;
-	for (int i = 0; i < 1000; i++) {
+	for (int i = 0; i < num_insert; i++) {
 		ASSERT_TRUE(myTree.verifyRedChild()) << "There are " << i << " elements in this tree.\n";
-		int next = rand()%5000;
+		int next = rand()%modulo;
 		myTree.insert(next);
 		order.push(next);
 	}
@@ -74,39 +87,16 @@ TEST_F(RedBlackTreeTest, SanityCheck) {
 }
 
 TEST_F(RedBlackTreeTest, InsertionSizeTest) {
-	cout << "Inserting 1000 random integers [0, 99] into tree and checking size.\n";
-	for (int i = 1; i <= 1000; i++) {
-		int next = rand()%100;
+	int num_insert = 1000;
+	int modulo = 300;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree and verifying that and verifying size.\n";
+
+	for (int i = 1; i <= num_insert; i++) {
+		int next = rand()%modulo;
 		myTree.insert(next);
 		EXPECT_FALSE(myTree.empty());
 		EXPECT_EQ(i, myTree.size());
-	}
-}
-
-TEST_F(RedBlackTreeTest, BasicContainsTest) {
-	cout << "Inserting integers 1 to 100 into tree\n";
-	for (int i = 1; i <= 100; i++) {
-		myTree.insert(i);
-	}
-	cout << "Checking that the tree has integers 1 to 100\n";
-	for (int i = 1; i <= 100; i++) {
-		EXPECT_TRUE(myTree.contains(i)) << i;
-	}
-}
-
-TEST_F(RedBlackTreeTest, AdvancedContainsTest) {
-	cout << "Inserting 1000 random integers [0, 299] into tree.\n";
-	set<int> inserted_nums;
-	for (int i = 0; i < 1000; i++) {
-		int next = rand()%300;
-		myTree.insert(next);
-		inserted_nums.insert(next);
-	}
-	cout << "Checking if tree correctly contains numbers [0, 299].\n";
-	for (int i = 0; i <= 299; i++) {
-		bool should_be_in = false;
-		if (inserted_nums.count(i) == 1) should_be_in = true;
-		EXPECT_EQ(should_be_in, myTree.contains(i));
 	}
 }
 
@@ -126,25 +116,15 @@ TEST_F(RedBlackTreeTest, RedChildTest) {
 	redChildTest();
 }
 
-TEST_F(RedBlackTreeTest, CountTest) {
-	cout << "Inserting 1000 random integers [0, 299] into tree and checking counter operator.\n";
-	map<int, int> freq;
-	for (int i = 0; i < 1000; i++) {
-		int next = rand()%300;
-		freq[next]++;
-		myTree.insert(next);
-	}
-
-	for (int i = 0; i < 300; i++) {
-		EXPECT_EQ(freq[i], myTree.count(i));
-	}
-}
-
 void RedBlackTreeTest::FullInsertTest() {
-	cout << "Inserting 10000 random integers [0, 999] into tree and verifying all tree properties.\n";
-	for (int i = 0; i < 10000; i++) {
+	int num_insert = 10000;
+	int modulo = 50000;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree and verifying all tree properties.\n";
+
+	for (int i = 0; i < num_insert; i++) {
 		EXPECT_TRUE(myTree.verifyProperties());
-		myTree.insert(rand()%1000);
+		myTree.insert(rand()%modulo);
 	}
 }
 
@@ -152,22 +132,81 @@ TEST_F(RedBlackTreeTest, FullInsertTest) {
 	FullInsertTest();
 }
 
+TEST_F(RedBlackTreeTest, BasicContainsTest) {
+	int num_insert = 100;
+
+	cout << "Inserting integers 1 to " << num_insert << " into tree\n";
+	for (int i = 1; i <= num_insert; i++) {
+		myTree.insert(i);
+	}
+	cout << "Checking that the tree has integers 1 to " << num_insert << "\n";
+	for (int i = 1; i <= num_insert; i++) {
+		EXPECT_TRUE(myTree.contains(i)) << i;
+	}
+}
+
+TEST_F(RedBlackTreeTest, AdvancedContainsTest) {
+	int num_insert = 1000;
+	int modulo = 3000;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree.\n";
+
+	set<int> inserted_nums;
+	for (int i = 0; i < num_insert; i++) {
+		int next = rand()%modulo;
+		myTree.insert(next);
+		inserted_nums.insert(next);
+	}
+	cout << "Checking if tree correctly contains numbers [0, " << modulo-1 << "].\n";
+	for (int i = 0; i <=  modulo; i++) {
+		bool should_be_in = false;
+		if (inserted_nums.count(i) == 1) should_be_in = true;
+		EXPECT_EQ(should_be_in, myTree.contains(i));
+	}
+}
+
+TEST_F(RedBlackTreeTest, CountTest) {
+	int num_insert = 1000;
+	int modulo = 2000;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree and checking count operator.\n";
+
+	map<int, int> freq;
+	for (int i = 0; i < num_insert; i++) {
+		int next = rand()%modulo;
+		freq[next]++;
+		myTree.insert(next);
+	}
+
+	for (int i = 0; i < modulo; i++) {
+		EXPECT_EQ(freq[i], myTree.count(i));
+	}
+}
 
 TEST_F(RedBlackTreeTest, DeleteExceptionTest) {
-	for (int i = 0; i < 1000; i++) {
+	int num_check = 1000;	
+
+	cout << "Verifying that remove throws exceptions for elements that aren't there.\n";
+
+	for (int i = 0; i < num_check; i++) {
 		EXPECT_THROW(myTree.remove(i), invalid_argument);
 	}
 }
 
 void RedBlackTreeTest::BasicDeleteTest() {
-	cout << "Inserting 1 into the tree 1000 times." << endl;
-	for (int i = 0; i < 1000; i++) {
-		myTree.insert(1);
+	int num_to_insert = 1;
+	int num_check = 1000;
+
+	cout << "Inserting " << num_to_insert << " in the tree " << num_check << " times.\n";
+	for (int i = 0; i < num_check; i++) {
+		myTree.insert(num_to_insert);
 	}
 
-	cout << "Deleting 1 from the tree 1000 times and verifying tree properties." << endl;
-	for (int i = 0; i < 1000; i++) {
-		myTree.remove(1);
+	cout << "Deleting " << num_to_insert << " from the tree " << num_check << " times "
+	     << "and verifying tree properties.\n";
+
+	for (int i = 0; i < num_check; i++) {
+		myTree.remove(num_to_insert);
 		EXPECT_TRUE(myTree.verifyProperties());
 	}
 }
@@ -177,32 +216,42 @@ TEST_F(RedBlackTreeTest, BasicDeleteTest) {
 }
 
 void RedBlackTreeTest::DeleteTest() {
-	cout << "Inserting integers 0 to 999 into tree." << endl;
-	for (int i = 0; i < 1000; i++) {
+	int num_insert = 1000;
+
+	cout << "Inserting integers 0 to " << num_insert << " into tree.\n";
+	for (int i = 0; i < num_insert; i++) {
 		myTree.insert(i);
 	}
 
 	int counter = 0;
 
-	cout << "Deleting integers 0 to 999 in backwards order and verifying all properties." << endl;
-	for (int i = 999; i >= 0; i--) {
+	cout << "Deleting integers 0 to " << num_insert 
+	     <<	" in backwards order and verifying all properties.\n"; 
+
+	for (int i = num_insert-1; i >= 0; i--) {
 		myTree.remove(i);
 		if (myTree.verifyProperties()) counter++;
 	}
 
-	EXPECT_EQ(1000, counter);
+	EXPECT_EQ(num_insert, counter);
 }
 
 TEST_F(RedBlackTreeTest, DeleteTest) {
 	DeleteTest();
 }
 
-void RedBlackTreeTest::ComprehensiveDeleteTest() {
+void RedBlackTreeTest::HighDensityDeleteTest() {
+	int num_insert = 10000;
+	int modulo = 10000;
+
+	cout << "Inserting " << num_insert << " random integers [0, "
+	     << modulo-1 << "] into tree.\n";
+
 	map<int, int> in_tree;
 	vector<int> order;
-	cout << "Inserting 10000 random integers [0, 30000) into tree." << endl;
-	for (int i = 0; i < 10000; i++) {
-		int next = rand()%30000;
+
+	for (int i = 0; i < num_insert; i++) {
+		int next = rand()%modulo;
 		order.push_back(next);
 		in_tree[next]++;
 		myTree.insert(next);
@@ -210,8 +259,44 @@ void RedBlackTreeTest::ComprehensiveDeleteTest() {
 
 	random_shuffle(order.begin(), order.end());
 
-	cout << "Deleting inserted integers in random order, and verifying that delete works properly" << endl;
-	for (int i = 0; i < 10000; i++) {
+	cout << "Deleting inserted integers in random order, and verifying that delete works properly.\n";
+	for (int i = 0; i < num_insert; i++) {
+		int next = order.back();
+		order.pop_back();
+		if (in_tree[next] != 0) {
+			--in_tree[next];
+			myTree.remove(next);
+			EXPECT_TRUE(myTree.verifyProperties()) << "Count: " << i << endl << "Number: " << next << endl << "Amount-1: " << in_tree[next] << endl;
+		} else {
+			EXPECT_THROW(myTree.remove(next), invalid_argument);
+		}
+	}
+}
+
+TEST_F(RedBlackTreeTest, HighDensityDeleteTest) {
+	HighDensityDeleteTest();
+}
+
+void RedBlackTreeTest::ComprehensiveDeleteTest() {
+	int num_insert = 10000;
+	int modulo = 30000;
+	cout << "Inserting " << num_insert << " random integers [0, " 
+	     << modulo-1 << "] into tree.\n";
+
+	map<int, int> in_tree;
+	vector<int> order;
+
+	for (int i = 0; i < num_insert; i++) {
+		int next = rand()%modulo;
+		order.push_back(next);
+		in_tree[next]++;
+		myTree.insert(next);
+	}
+
+	random_shuffle(order.begin(), order.end());
+
+	cout << "Deleting inserted integers in random order, and verifying that delete works properly.\n";
+	for (int i = 0; i < num_insert; i++) {
 		int next = order.back();
 		order.pop_back();
 		if (in_tree[next] != 0) {
@@ -229,26 +314,31 @@ TEST_F(RedBlackTreeTest, ComprehensiveDeleteTest) {
 }
 
 void RedBlackTreeTest::ComprehensiveTest() {
-	for (int j = 0; j < 10; j++) {
-		cout << "Inserting 10000 random integers [0, 30000) into tree." << endl;
+	int num_times = 10;
+	int num_insert = 10000;
+	int modulo = 30000;
+
+	for (int j = 0; j < num_times; j++) {
+		cout << "Inserting " << num_insert << " random integers [0, " 
+		     << modulo-1 << "] into tree.\n";
 		map<int, int> in_tree;
 		vector<int> order;
-		for (int i = 0; i < 10000; i++) {
-			int next = rand()%30000;
+		for (int i = 0; i < num_insert; i++) {
+			int next = rand()%modulo;
 			order.push_back(next);
 			in_tree[next]++;
 			myTree.insert(next);
 		}
 
 		EXPECT_FALSE(myTree.empty());
-		EXPECT_EQ(10000, myTree.size());
+		EXPECT_EQ(num_insert, myTree.size());
 		EXPECT_TRUE(myTree.verifyProperties());
 
 		random_shuffle(order.begin(), order.end());
 		
-		cout << "Deleting inserted integers in random order" << endl;
+		cout << "Deleting inserted integers in random order.\n";
 
-		for (int i = 0; i < 10000; i++) {
+		for (int i = 0; i < num_insert; i++) {
 			int next = order.back();
 			order.pop_back();
 			if (in_tree[next] != 0) {
@@ -278,7 +368,9 @@ class ConstructorTests: public ::testing::Test {
 };
 
 void ConstructorTests::SetUp () {
-	for (int i = 0; i < 1000; i++) {
+	int num_insert = 1000;
+
+	for (int i = 0; i < num_insert; i++) {
 		int next = rand()%k_max;
 		++elems_in_tree[next];
 		myTree.insert(next);
@@ -317,28 +409,30 @@ TEST_F(ConstructorTests, CopyConstructorIndependenceTest) {
 }
 
 TEST_F(ConstructorTests, BasicAssignmentOperatorTest) {
-	cout << "Making a copy using assignment operator and checking that the copy worked." << endl;
+	cout << "Making a copy using assignment operator and checking that the copy worked.\n";
 	RedBlackTree<int> copy;
 	copy = myTree;
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
 }
 
 TEST_F(ConstructorTests, AssignmentOperatorEdgeCases) {
-	cout << "Inserting 1000 random integers into a RBTree" << endl;
+	int num_insert = 1000;
+
+	cout << "Inserting " << num_insert << " random integers into a RBTree.\n";
 	RedBlackTree<int> copy;
-	for (int i = 0; i < 1000; i++) copy.insert(rand()%k_max);
+	for (int i = 0; i < num_insert; i++) copy.insert(rand()%k_max);
 
 	cout << "Making a copy of that RB Tree" << endl;
 	RedBlackTree<int> copy_two = copy;
 
-	cout << "Copying the original tree and checking that everything was copied properly." << endl;
+	cout << "Copying the original tree and checking that everything was copied properly.\n";
 	copy = myTree;
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
 	
-	cout << "Inserting 1000 new random integers into the copied tree" << endl;
-	for (int i = 0; i < 1000; i++) copy.insert(rand()%k_max);
+	cout << "Inserting " << num_insert << " new random integers into the copied tree.\n";
+	for (int i = 0; i < num_insert; i++) copy.insert(rand()%k_max);
 
-	cout << "Testing that we can string together multiply assignment operations" << endl;
+	cout << "Testing that we can string together multiply assignment operations.\n";
 	copy_two = copy = myTree;
 
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy.count(i), elems_in_tree[i]);
@@ -348,12 +442,12 @@ TEST_F(ConstructorTests, AssignmentOperatorEdgeCases) {
 	EXPECT_EQ(copy.size(), myTree.size());
 	EXPECT_EQ(copy.size(), copy_two.size());
 
-	cout << "Deleting all elements of copy and checking that it doesn't affect others" << endl;
+	cout << "Deleting all elements of copy and checking that it doesn't affect others.\n";
 	copy.clear();
 
 	ASSERT_EQ(0, copy.size());
-	ASSERT_EQ(1000, copy_two.size());
-	ASSERT_EQ(1000, myTree.size());
+	ASSERT_EQ(num_insert, copy_two.size());
+	ASSERT_EQ(num_insert, myTree.size());
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy_two.count(i), elems_in_tree[i]);
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(myTree.count(i), elems_in_tree[i]);
 }

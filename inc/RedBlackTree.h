@@ -146,6 +146,13 @@ private:
     /** Copies a tree recursively */
     void copyTree(const Node* from, Node* &into, Node* const parent);
 
+    /** Verfies that the sum of the counts is equal to the size */
+    bool verifyCount() const;
+
+    /** Recursively sums up the count of all descendant nodes of the currNode including
+     * the currNode*/
+    int countSum(Node* currNode) const;
+
     /** Wrapper for verifying all RB Properties */
     bool verifyProperties() const;
 };
@@ -527,8 +534,8 @@ int RedBlackTree<ElemType>::numNullChildren(Node* node) const {
 /** Restores tree properties after delete */
 template <typename ElemType>
 void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) {
-	/** Case I: */
-	if (parent == NULL) return;
+	/** Case 0: */
+	if (parent == NULL) return; // At the root. Do nothing.
 	
 	/** Find the sibling node */
 	Node* sibling;
@@ -541,10 +548,10 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 
 	/** Case I: Sibling is red => Parent is black */
 	if (sibling->red) {
-		sibling->red = parent->red;
+		sibling->red = parent->red; // Swap colors and rotate
 		parent->red = !parent->red;
 		rotate(sibling, !left);
-		deleteRestoreTree(parent, not_sibling);
+		deleteRestoreTree(parent, not_sibling); // Recurse in new position
 	} else if (!parent->red && !sibling->red &&
 	     	   (sibling->lChild == NULL || !sibling->lChild->red) &&
 		   (sibling->rChild == NULL || !sibling->rChild->red)) {
@@ -645,7 +652,8 @@ void RedBlackTree<ElemType>::rbDelete(Node* currNode) {
 /** Wrapper for verifying all RB Properties */
 template <typename ElemType>
 bool RedBlackTree<ElemType>::verifyProperties() const {
-	return verifyRedChild() && parentChildMatch() && verifyBlackHeight() && blackRoot();
+	return verifyRedChild() && parentChildMatch() && verifyBlackHeight()
+	       	&& blackRoot() && verifyCount();
 }
 
 /** Helper function that copies a tree recursively */
@@ -661,6 +669,19 @@ void RedBlackTree<ElemType>::copyTree(const Node* from, Node* &into, Node* const
 		copyTree(from->lChild, into->lChild, into);
 		copyTree(from->rChild, into->rChild, into);
 	}
+}
+
+/** Verifies that the sum of the counts is equal to the size of the tree */
+template <typename ElemType>
+bool RedBlackTree<ElemType>::verifyCount() const {
+	return countSum(root) == size();
+}
+
+/** Returns the sum of the counts of all nodes */
+template <typename ElemType>
+int RedBlackTree<ElemType>::countSum(Node* currNode) const {
+	if (currNode == NULL) return 0;
+	return currNode->count + countSum(currNode->lChild) + countSum(currNode->rChild);
 }
 
 #endif // REDBLACKTREE_H
