@@ -45,9 +45,6 @@ public:
     /** Returns if the tree is empty or not */
     bool empty() const;
 
-    /** Returns a debug stringstream */
-//    std::stringstream& debugString() const;
-
     /** Returns a debug string */
     std::string debugString() const;
 
@@ -153,8 +150,7 @@ private:
     bool verifyProperties() const;
 };
 
-/**
- * Implementation details */
+/** Implementation details */
 
 /** Constructor */
 template <typename ElemType>
@@ -374,7 +370,6 @@ void RedBlackTree<ElemType>::restoreTree(Node* child) {
 			/** Solution: Rotate so that parent and child are both lChild or rChild.
 			 * Finish by doing Case IV */
 			// NOTE: Grandparent should never be NULL if there's a red red discrepancy!
-			if (grandparent(child) == NULL) std::cout << "NO!" << std::endl;
 			if (grandparent(child)->lChild == child->parent && child == child->parent->rChild) {
 				Node* origParent = child->parent;
 				rotate(child, true); // Left rotate
