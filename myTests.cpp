@@ -362,7 +362,6 @@ class ConstructorTests: public ::testing::Test {
 	protected:
 		RedBlackTree<int> myTree;
 		virtual void SetUp();
-		virtual void TearDown();
 		map<int, int> elems_in_tree;
 		static int const k_max = 3000;
 };
@@ -374,15 +373,6 @@ void ConstructorTests::SetUp () {
 		int next = rand()%k_max;
 		++elems_in_tree[next];
 		myTree.insert(next);
-	}
-}
-
-void ConstructorTests::TearDown() {
-	for (auto map_it=elems_in_tree.begin(); map_it != elems_in_tree.end(); ++map_it) {
-		while (map_it->second > 0) {
-			--map_it->second;
-			myTree.remove(map_it->first);
-		}
 	}
 }
 
@@ -449,6 +439,12 @@ TEST_F(ConstructorTests, AssignmentOperatorEdgeCases) {
 	ASSERT_EQ(num_insert, copy_two.size());
 	ASSERT_EQ(num_insert, myTree.size());
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(copy_two.count(i), elems_in_tree[i]);
+	for (int i = 0; i < k_max; i++) EXPECT_EQ(myTree.count(i), elems_in_tree[i]);
+
+	cout << "Using assignment operator on self, and checking for errors.\n";
+	myTree = myTree;
+
+	ASSERT_EQ(num_insert, myTree.size());
 	for (int i = 0; i < k_max; i++) EXPECT_EQ(myTree.count(i), elems_in_tree[i]);
 }
 
