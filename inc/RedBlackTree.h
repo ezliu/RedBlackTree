@@ -10,13 +10,18 @@
  *
  * Red Black Tree as implemented by Evan Liu.
  *
- * Satisfies the following (MIT OpenCourseware as resource):
+ * Satisfies the following: 
  *
  * 1) Each node is red or black.
  * 2) Root and NULL leaves are black.
  * 3) Each red node must have two black child nodes.
  * 4) Any path from a node to its descendant leaves has the same number of
  * black nodes. 
+ *
+ * Resources used:
+ *
+ * MIT OpenCourseware Lecture
+ * Introduction to Algorithms (Cormen, Leierson, Rivest, Stein)
  *
  */
 
