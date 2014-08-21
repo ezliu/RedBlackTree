@@ -129,7 +129,7 @@ private:
     int numNullChildren(Node* node) const;
 
     /** Restores tree properties after delete. */
-    void deleteRestoreTree(Node* parent, Node* not_sibling);
+    void deleteRestoreTree(Node* parent, Node* notSibling);
 
     /** Recursive wrapper for verifying red nodes have only black children */
     bool verifyRedChild() const;
@@ -268,20 +268,18 @@ void RedBlackTree<ElemType>::print() const {
  */
 template <typename ElemType>
 void RedBlackTree<ElemType>::recursiveInsert(const ElemType& value, Node* currNode) {
-	if (root == NULL) { // Insert root node
+	if (root == NULL)  // Insert root node
 		root = makeNode(value, NULL, false);
-	} else if (value < currNode->value) { // Traverse left
-		if (currNode->lChild == NULL) { // If insertable, place node.
-			currNode->lChild = makeNode(value, currNode);
-			restoreTree(currNode->lChild);
-		} else recursiveInsert(value, currNode->lChild); 	
-	} else if (value == currNode->value) {
-	       	currNode->count++; // Duplicates insert
-	} else { // Traverse right
-		if (currNode->rChild == NULL) { // If insertable, place node.
-			currNode->rChild = makeNode(value, currNode);
-			restoreTree(currNode->rChild);
-		} else recursiveInsert(value, currNode->rChild);
+	else if (value == currNode->value)
+		currNode->count++; // Duplicate insert
+	else {
+		Node** child;
+		if (value < currNode->value) child = &currNode->lChild; //Traverse l/r
+		else child = &currNode->rChild;
+		if (*child == NULL) { // If insertable, place node.
+			*child = makeNode(value, currNode);
+			restoreTree(*child);
+		} else recursiveInsert(value, *child); // Otherwise, continue traversing
 	}
 }
 
@@ -334,11 +332,8 @@ void RedBlackTree<ElemType>::rotate(Node* child, const bool left) {
 		origParent->lChild = origGrandchild;
 	}
 	if (origGrandchild != NULL) origGrandchild->parent = origParent; // Reconnect grandchild
-	if (origGrandparent == NULL) {
-		root = child;
-		return;
-	}
-	if (origGrandparent->lChild == origParent) origGrandparent->lChild = child; // Connect nodes back to grandparent
+	if (origGrandparent == NULL) root = child; // If no grandparent, then at root.
+	else if (origGrandparent->lChild == origParent) origGrandparent->lChild = child; // Connect nodes back to grandparent
 	else origGrandparent->rChild = child;
 }
 
@@ -559,27 +554,27 @@ int RedBlackTree<ElemType>::numNullChildren(Node* node) const {
 
 /** Restores tree properties after delete.
  * @parent The parent of the node that's messing up rb properties
- * @not_sibling The node that's messing up rb properties */
+ * @notSibling The node that's messing up rb properties */
 template <typename ElemType>
-void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) {
+void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* notSibling) {
 	/** Case 0: */
 	if (parent == NULL) return; // At the root. Do nothing.
 	
 	/** Find the sibling node */
 	Node* sibling;
 	bool left = false;
-	if (parent->lChild != not_sibling) {
+	if (parent->lChild != notSibling) {
 		sibling = parent->lChild;
 		left = true;
 	}
-	if (parent->rChild != not_sibling) sibling = parent->rChild;
+	if (parent->rChild != notSibling) sibling = parent->rChild;
 
 	/** Case I: Sibling is red => Parent is black */
 	if (sibling->red) {
 		sibling->red = parent->red; // Swap colors and rotate
 		parent->red = !parent->red;
 		rotate(sibling, !left);
-		deleteRestoreTree(parent, not_sibling); // Recurse in new position
+		deleteRestoreTree(parent, notSibling); // Recurse in new position
 	} else if (!parent->red && !sibling->red &&
 	     	   (sibling->lChild == NULL || !sibling->lChild->red) &&
 		   (sibling->rChild == NULL || !sibling->rChild->red)) {
@@ -600,7 +595,7 @@ void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* not_sibling) 
 		sibling->red = child->red;
 		child->red = !child->red; // Swap colors and rotate into case V.
 		rotate(child, left);
-		deleteRestoreTree(parent, not_sibling);
+		deleteRestoreTree(parent, notSibling);
 	} else if ((!left && sibling->rChild != NULL && sibling->rChild->red) ||
 	           (left && sibling->lChild != NULL && sibling->lChild->red)) {
 	/** Case V: If the outer sibling child is red */

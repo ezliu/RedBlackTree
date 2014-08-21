@@ -6,7 +6,7 @@ OBJECTS=./obj
 
 VPATH=${INCLUDE}
 
-all: getobj myTests runtime putobj
+all: getobj myTests putobj
 
 getobj:
 	-mv ${OBJECTS}/*.[oa] . 2>/dev/null
@@ -19,9 +19,6 @@ myTests: myTests.o
 
 myTests.o: myTests.cpp RedBlackTree.h
 	${GCC} ${CXXFLAGS} -I${GTEST_DIR}/include -c myTests.cpp
-
-runtime: runtime.o
-	${GCC} ${CXXFLAGS} -o runtime runtime.o
 
 gtest:
 	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
