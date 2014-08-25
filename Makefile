@@ -6,11 +6,13 @@ OBJECTS=./obj
 
 VPATH=${INCLUDE}
 
-all: getobj myTests putobj
+all: getobj myTests ctags putobj
 
+.PHONY: getobj
 getobj:
 	-mv ${OBJECTS}/*.[oa] . 2>/dev/null
 
+.PHONY: putobj
 putobj:
 	-mv *.[oa] ${OBJECTS} 2>/dev/null
 
@@ -24,9 +26,14 @@ gtest:
 	g++ -isystem ${GTEST_DIR}/include -I${GTEST_DIR} -pthread -c ${GTEST_DIR}/src/gtest-all.cc
 	ar -rv libgtest.a gtest-all.o
 
+.PHONY: clean
 clean:
 	-rm -f myTests
 	-rm -f ${OBJECTS}/*.[oa]
+
+.PHONY: ctags
+ctags:
+	-ctags -R *
 
 rebuild: clean gtest all
 
