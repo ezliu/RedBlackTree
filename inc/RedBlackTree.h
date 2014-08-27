@@ -85,7 +85,7 @@ private:
     void recursiveInsert(const ElemType& value, Node* currNode);
 
     /** Makes a new node with value equal to value */
-    Node* makeNode(const ElemType& value, Node* parent, const bool red = true) const;
+    Node* makeNode(const ElemType& value, Node* const parent, const bool red = true) const;
 
     /** Recursively deletes the tree */
     void recursiveDelete(Node*& currNode);
@@ -94,47 +94,47 @@ private:
     void rotate(Node* child, const bool left);
 
     /** Returns the grandparent node */
-    Node* grandparent(const Node* child);
+    Node* grandparent(const Node* const child) const;
 
     /** Returns the Uncle node */
-    Node* uncle(const Node* child);
+    Node* uncle(const Node* const child) const;
 
     /** Returns sibling node */
-    Node* sibling(const Node* child);
+    Node* sibling(const Node* const child) const;
 
     /** Fixes any errors in coloring from insertion/deletion */
-    void restoreTree(Node* child);
+    void restoreTree(Node* const child);
 
     /** For debugging purposes: verifies that red nodes have only black children */
-    bool verifyRedChild(Node* currNode) const;
+    bool verifyRedChild(const Node* const currNode) const;
 
     /** For debugging purposes: returns the blackheight of a given node recursively */
     //TODO: Use memoization
-    int blackHeight(Node* currNode, const bool left) const;
+    int blackHeight(const Node* const currNode, const bool left) const;
 
     /** Recursive function to check all blackheights */
-    bool verifyBlackHeight(Node* currNode) const;
+    bool verifyBlackHeight(const Node* const currNode) const;
 
     /** Recursively checks that parent and children pointers match */
-    bool parentChildMatch(Node* currNode) const;
+    bool parentChildMatch(const Node* const currNode) const;
 
     /** Finds the node in the tree with the given value if it exists. Returns NULL if not. */
-    Node* findNode(Node* currNode, const ElemType &value) const;
+    Node* const findNode(Node* const currNode, const ElemType &value) const;
     
     /** Deals with all of the delete cases recursively */
     void rbDelete(Node* currNode);
 
     /** Swaps counts and values */
-    void swap(Node* left, Node* right);
+    void swap(Node* const left, Node* const right);
 
     /** Returns in-order predecessor */
-    Node* inOrderPredecessor(Node* node) const;
+    Node* inOrderPredecessor(const Node* const node) const;
 
     /** Returns num NULL children. 0 if given node is NULL */
-    int numNullChildren(Node* node) const;
+    int numNullChildren(const Node* const node) const;
 
     /** Restores tree properties after delete. */
-    void deleteRestoreTree(Node* parent, Node* notSibling);
+    void deleteRestoreTree(Node* const parent, const Node* const notSibling);
 
     /** Recursive wrapper for verifying red nodes have only black children */
     bool verifyRedChild() const;
@@ -149,14 +149,14 @@ private:
     bool parentChildMatch() const;
 
     /** Copies a tree recursively */
-    void copyTree(const Node* from, Node* &into, Node* const parent);
+    void copyTree(const Node* const from, Node* &into, Node* const parent) const;
 
     /** Verfies that the sum of the counts is equal to the size */
     bool verifyCount() const;
 
     /** Recursively sums up the count of all descendant nodes of the currNode including
      * the currNode*/
-    int countSum(Node* currNode) const;
+    int countSum(const Node* const currNode) const;
 
     /** Wrapper for verifying all RB Properties */
     bool verifyProperties() const;
@@ -295,7 +295,7 @@ void RedBlackTree<ElemType>::recursiveInsert(const ElemType& value, Node* currNo
  */
 template <typename ElemType>
 typename RedBlackTree<ElemType>::Node*
-RedBlackTree<ElemType>::makeNode(const ElemType& value, Node* parent, const bool red) const {
+RedBlackTree<ElemType>::makeNode(const ElemType& value, Node* const parent, const bool red) const {
 	Node* newNode = new Node;
 	newNode->parent = parent;
 	newNode->red = red;
@@ -346,7 +346,7 @@ void RedBlackTree<ElemType>::rotate(Node* child, const bool left) {
  * @child The child node */
 template <typename ElemType>
 typename RedBlackTree<ElemType>::Node*
-RedBlackTree<ElemType>::grandparent(const Node* child) {
+RedBlackTree<ElemType>::grandparent(const Node* const child) const {
 	if (child == NULL || child->parent == NULL) return NULL;
 	return child->parent->parent;
 }
@@ -355,7 +355,7 @@ RedBlackTree<ElemType>::grandparent(const Node* child) {
  * @child The child node */
 template <typename ElemType>
 typename RedBlackTree<ElemType>::Node*
-RedBlackTree<ElemType>::uncle(const Node* child) {
+RedBlackTree<ElemType>::uncle(const Node* const child) const {
 	if (grandparent(child) == NULL) return NULL;
 	if (grandparent(child)->rChild == child->parent) return grandparent(child)->lChild;
 	return grandparent(child)->rChild;
@@ -364,7 +364,7 @@ RedBlackTree<ElemType>::uncle(const Node* child) {
 /** Returns sibling node */
 template <typename ElemType>
 typename RedBlackTree<ElemType>::Node*
-RedBlackTree<ElemType>::sibling(const Node* child) {
+RedBlackTree<ElemType>::sibling(const Node* const child) const {
 	if (child == NULL || child->parent == NULL) return NULL;
 	if (child->parent->lChild == child) return child->parent->rChild;
 	return child->parent->lChild;
@@ -373,7 +373,7 @@ RedBlackTree<ElemType>::sibling(const Node* child) {
 /** Gets called to restore red black properties
  * @child The current node being looked at. Viewed as child */
 template <typename ElemType>
-void RedBlackTree<ElemType>::restoreTree(Node* child) {
+void RedBlackTree<ElemType>::restoreTree(Node* const child) {
 	// NOTE: This should not get called on a NULL node, so child should never be NULL.
 	if (root->red) { // Root is wrong color.
 		root->red = false;
@@ -421,7 +421,7 @@ bool RedBlackTree<ElemType>::verifyRedChild() const {
 /** Verifies the property that red nodes have black children recursively starting from currNode
  * @currNode The current node being verified */
 template <typename ElemType>
-bool RedBlackTree<ElemType>::verifyRedChild(Node* currNode) const {
+bool RedBlackTree<ElemType>::verifyRedChild(const Node* const currNode) const {
 	if (currNode == NULL) return true; // Stop at leaves
 	if (currNode->lChild == NULL && currNode->rChild == NULL) return true; // Check cases of red-red parent/child
 	if (((currNode->lChild != NULL && currNode->lChild->red) ||
@@ -434,7 +434,7 @@ bool RedBlackTree<ElemType>::verifyRedChild(Node* currNode) const {
  * @currNode The given node
  * @left The direction */
 template <typename ElemType>
-int RedBlackTree<ElemType>::blackHeight(Node* currNode, const bool left) const {
+int RedBlackTree<ElemType>::blackHeight(const Node* const currNode, const bool left) const {
 	Node* child;
 	if (left) child = currNode->lChild;
 	else child = currNode->rChild;
@@ -446,7 +446,7 @@ int RedBlackTree<ElemType>::blackHeight(Node* currNode, const bool left) const {
 /** Recursively verifies that node has equal left and right black heights
  * @currNode The current node being verified */
 template <typename ElemType>
-bool RedBlackTree<ElemType>::verifyBlackHeight(Node* currNode) const {
+bool RedBlackTree<ElemType>::verifyBlackHeight(const Node* const currNode) const {
 	if (currNode == NULL) return true; // Stop at leaves
 	if (blackHeight(currNode, true) != blackHeight(currNode, false)) return false; // Check currNode
 	if (!verifyBlackHeight(currNode->lChild) || !verifyBlackHeight(currNode->rChild)) return false; // Check children
@@ -482,7 +482,7 @@ bool RedBlackTree<ElemType>::parentChildMatch() const {
 /** Recursively checks for match between parent and child pointers
  * @currNode Node being checked */
 template <typename ElemType>
-bool RedBlackTree<ElemType>::parentChildMatch(Node* currNode) const {
+bool RedBlackTree<ElemType>::parentChildMatch(const Node* const currNode) const {
 	if (currNode == NULL) return true; // Stop at leaves
 	if (currNode->lChild != NULL && currNode->lChild->parent != currNode) return false; // Check all false cases
 	if (currNode->rChild != NULL && currNode->rChild->parent != currNode) return false;
@@ -494,8 +494,8 @@ bool RedBlackTree<ElemType>::parentChildMatch(Node* currNode) const {
  * @currNode Current node being looked at
  * @value Value being searched for */
 template <typename ElemType>
-typename RedBlackTree<ElemType>::Node*
-RedBlackTree<ElemType>::findNode(Node* currNode, const ElemType &value) const {
+typename RedBlackTree<ElemType>::Node* const
+RedBlackTree<ElemType>::findNode(Node* const currNode, const ElemType &value) const {
 	if (currNode == NULL) return NULL; // If leaf, not found
 	if (currNode->value == value) return currNode; //Binary search
 	if (value < currNode->value) return findNode(currNode->lChild, value);
@@ -525,7 +525,7 @@ void RedBlackTree<ElemType>::remove(const ElemType &value) {
  * @left The first node
  * @right The second node */
 template <typename ElemType>
-void RedBlackTree<ElemType>::swap(Node* left, Node* right) {
+void RedBlackTree<ElemType>::swap(Node* const left, Node* const right) {
 	int temp = left->value;
 	left->value = right->value;
 	right->value = temp;
@@ -539,7 +539,7 @@ void RedBlackTree<ElemType>::swap(Node* left, Node* right) {
  * @return The in-order pred. NULL if node is NULL or has no left child */
 template <typename ElemType>
 typename RedBlackTree<ElemType>::Node*
-RedBlackTree<ElemType>::inOrderPredecessor(Node* node) const {
+RedBlackTree<ElemType>::inOrderPredecessor(const Node* const node) const {
 	if (node == NULL || node->lChild == NULL) return NULL;
 	Node* inOrderPred = node->lChild;
 	while (inOrderPred->rChild != NULL) inOrderPred = inOrderPred->rChild; // Go as far right as possible
@@ -549,7 +549,7 @@ RedBlackTree<ElemType>::inOrderPredecessor(Node* node) const {
 /** Returns the number of NULL children of the given node. 0 if given node is NULL.
  * @node The given node */
 template <typename ElemType>
-int RedBlackTree<ElemType>::numNullChildren(Node* node) const {
+int RedBlackTree<ElemType>::numNullChildren(const Node* const node) const {
 	int num = 0;
 	if (node == NULL) return num;
 	if (node->lChild == NULL) num++;
@@ -561,7 +561,7 @@ int RedBlackTree<ElemType>::numNullChildren(Node* node) const {
  * @parent The parent of the node that's messing up rb properties
  * @notSibling The node that's messing up rb properties */
 template <typename ElemType>
-void RedBlackTree<ElemType>::deleteRestoreTree(Node* parent, Node* notSibling) {
+void RedBlackTree<ElemType>::deleteRestoreTree(Node* const parent, const Node* const notSibling) {
 	/** Case 0: */
 	if (parent == NULL) return; // At the root. Do nothing.
 	
@@ -690,7 +690,7 @@ bool RedBlackTree<ElemType>::verifyProperties() const {
  * @into The current node to be copied into
  * @parent The parent of the into node */
 template <typename ElemType>
-void RedBlackTree<ElemType>::copyTree(const Node* from, Node* &into, Node* const parent) {
+void RedBlackTree<ElemType>::copyTree(const Node* const from, Node* &into, Node* const parent) const {
 	if (from == NULL) into = NULL; // Stop at leaves
 	else {
 		into = new Node; // Make a new node to copy into
@@ -712,7 +712,7 @@ bool RedBlackTree<ElemType>::verifyCount() const {
 /** Returns the sum of the counts of all nodes
  * @currNode The current node being summed */
 template <typename ElemType>
-int RedBlackTree<ElemType>::countSum(Node* currNode) const {
+int RedBlackTree<ElemType>::countSum(const Node* const currNode) const {
 	if (currNode == NULL) return 0;
 	return currNode->count + countSum(currNode->lChild) + countSum(currNode->rChild);
 }
