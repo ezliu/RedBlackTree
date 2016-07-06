@@ -1,6 +1,6 @@
 #ifndef REDBLACKTREE_H
 #define REDBLACKTREE_H
-#define NULL 0
+// #define NULL 0
 
 #include <sstream>
 #include <queue>
@@ -60,7 +60,7 @@ public:
     bool contains(const ElemType& value) const;
 
     /** Returns the number of times an element is in the tree. */
-    int count(const ElemType& value) const;
+    std::size_t count(const ElemType& value) const;
 
     /** Deletes a node corresponding to the value if it exists in the tree */
     void remove(const ElemType &value);
@@ -156,7 +156,7 @@ private:
 
     /** Recursively sums up the count of all descendant nodes of the currNode including
      * the currNode*/
-    int countSum(const Node* const currNode) const;
+    std::size_t countSum(const Node* const currNode) const;
 
     /** Wrapper for verifying all RB Properties */
     bool verifyProperties() const;
@@ -505,7 +505,7 @@ RedBlackTree<ElemType>::findNode(Node* const currNode, const ElemType &value) co
 /** Returns the number of times a key is in the tree.
  * @value Value being searched for */
 template <typename ElemType>
-int RedBlackTree<ElemType>::count(const ElemType &value) const {
+std::size_t RedBlackTree<ElemType>::count(const ElemType &value) const {
 	if (findNode(root, value) == NULL) return 0;
 	return findNode(root, value)->count;
 }
@@ -526,12 +526,12 @@ void RedBlackTree<ElemType>::remove(const ElemType &value) {
  * @right The second node */
 template <typename ElemType>
 void RedBlackTree<ElemType>::swap(Node* const left, Node* const right) {
-	int temp = left->value;
+	ElemType temp = left->value;
 	left->value = right->value;
 	right->value = temp;
-	temp = left->count;
+	std::size_t temp2 = left->count;
 	left->count = right->count;
-	right->count = temp;
+	right->count = temp2;
 }
 
 /** Returns the in-order predecessor of the current node.
@@ -712,7 +712,7 @@ bool RedBlackTree<ElemType>::verifyCount() const {
 /** Returns the sum of the counts of all nodes
  * @currNode The current node being summed */
 template <typename ElemType>
-int RedBlackTree<ElemType>::countSum(const Node* const currNode) const {
+std::size_t RedBlackTree<ElemType>::countSum(const Node* const currNode) const {
 	if (currNode == NULL) return 0;
 	return currNode->count + countSum(currNode->lChild) + countSum(currNode->rChild);
 }
