@@ -1,4 +1,4 @@
-GTEST_DIR=/Users/Evan/Downloads/gtest-1.7.0
+GTEST_DIR=/Users/Evan/Documents/code/googletest/googletest
 GCC=g++
 CXXFLAGS=-g -Wall -I$(INCLUDE)
 INCLUDE=./inc
@@ -17,7 +17,7 @@ putobj:
 	-mv *.[oa] ${OBJECTS} 2>/dev/null
 
 myTests: myTests.o 
-	${GCC} ${CXXFLAGS} -isystem ${GTEST_DIR}/include myTests.o libgtest.a -o myTests
+	${GCC} ${CXXFLAGS} -isystem ${GTEST_DIR}/include myTests.o ${GTEST_DIR}/libgtest.a -o myTests
 
 myTests.o: myTests.cpp RedBlackTree.h
 	${GCC} ${CXXFLAGS} -I${GTEST_DIR}/include -c myTests.cpp
