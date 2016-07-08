@@ -1,6 +1,5 @@
 #ifndef REDBLACKTREE_H
 #define REDBLACKTREE_H
-// #define NULL 0
 
 #include <sstream>
 #include <queue>
